@@ -6,6 +6,8 @@ class User < ActiveRecord::Base
   validates :email, presence: true, length: { maximum: 255}, format: { with: VALID_EMAIL_REGEX }, uniqueness: { case_sensitive: false }
   has_secure_password
 
+  has_many :microposts, dependent: :destroy
+
   validates :password, length: { minimum: 6}, allow_blank: true
 
   # Returns the hash digest of the given string.
@@ -34,6 +36,10 @@ class User < ActiveRecord::Base
   # Forgets a user.
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  def feed
+    Micropost.where("user_id = ?", id)
   end
 
 end
